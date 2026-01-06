@@ -1,0 +1,246 @@
+# Charity Hub API (VS Code REST Client)
+# Extension: https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+#
+# Tips
+# - Click "Send Request" above any request.
+# - Run "Authenticate" first; tokens will be picked from its response.
+
+@host = http://localhost:3000
+@idToken = wfkjhwjfdhsfksjdfhskdjfhs
+@deviceId = 91235778sd412qwwtest
+@deviceType = android
+
+### Health (Actuator)
+GET {{host}}/actuator
+
+
+### Authenticate (returns accessToken + refreshToken)
+# @name auth
+POST {{host}}/v1/accounts/authenticate
+Content-Type: application/json
+
+{
+  "idToken": "{{idToken}}",
+  "deviceId": "{{deviceId}}",
+  "deviceType": "{{deviceType}}"
+}
+
+#@accessToken = {{auth.response.body.accessToken}}
+#@refreshToken = {{auth.response.body.refreshToken}}
+
+
+### Refresh Token (returns new accessToken)
+# @name refresh
+POST {{host}}/v1/accounts/refresh-token
+Authorization: Bearer {{refreshToken}}
+Content-Type: application/json
+
+{
+  "lang": "en"
+}
+
+@accessToken = {{refresh.response.body.accessToken}}
+
+
+### Register FCM Token
+POST {{host}}/v1/accounts/register-fcm-token
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "fcmToken": "replace-with-real-fcm-token"
+}
+
+
+### Update Basic Info
+POST {{host}}/v1/accounts/update-basic-info
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Hassan Ibrahim",
+  "photoUrl": ""
+}
+
+
+### Invite User (admin)
+POST {{host}}/v1/accounts/invite
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "mobileNumber": "201260032633"
+}
+
+
+### Get My Connections
+GET {{host}}/v1/accounts/connections
+Authorization: Bearer {{accessToken}}
+
+
+### Get User Connections (admin)
+@userId = 85f494a5-b208-4274-b0ad-b4ec282ed555
+GET {{host}}/v1/accounts/{{userId}}/connections
+Authorization: Bearer {{accessToken}}
+
+
+### Block User (admin)
+POST {{host}}/v1/accounts/{{userId}}/block
+Authorization: Bearer {{accessToken}}
+
+
+### Unblock User (admin)
+POST {{host}}/v1/accounts/{{userId}}/un-block
+Authorization: Bearer {{accessToken}}
+
+
+### Add Permission (admin)
+# Note: endpoint in code is /add-permission (not /permissions)
+POST {{host}}/v1/accounts/{{userId}}/add-permission
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "permission": "CREATE_CASES"
+}
+
+
+### Remove Permission (admin)
+# Note: endpoint in code is /remove-permission
+POST {{host}}/v1/accounts/{{userId}}/remove-permission
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "permission": "CREATE_CASES"
+}
+
+
+# ------------------------------
+# Cases
+# ------------------------------
+
+### Create Case (published)
+# @name createCase
+POST {{host}}/v1/cases
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "نداء عاجل",
+  "description": "وصف مختصر للحالة...",
+  "goal": 15000,
+  "publish": true,
+  "acceptZakat": true,
+  "documents": []
+}
+
+@caseCode = {{createCase.response.body.caseCode}}
+
+
+### Create Draft Case
+# @name createDraft
+POST {{host}}/v1/cases
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "مسودة حالة",
+  "description": "وصف مختصر...",
+  "goal": 15000,
+  "publish": false,
+  "acceptZakat": true,
+  "documents": []
+}
+
+@draftCaseCode = {{createDraft.response.body.caseCode}}
+
+
+### Update Case
+PUT {{host}}/v1/cases/{{caseCode}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "حالة عاجلة جدا",
+  "description": "تحديث الوصف...",
+  "goal": 3500,
+  "acceptZakat": true,
+  "documents": []
+}
+
+
+### Search Cases
+GET {{host}}/v1/cases?limit=20&offset=0
+Authorization: Bearer {{accessToken}}
+
+
+### Search Cases (with onlyZakat)
+GET {{host}}/v1/cases?limit=20&offset=0&onlyZakat=false
+Authorization: Bearer {{accessToken}}
+
+
+### Get Draft Cases
+GET {{host}}/v1/draft-cases
+Authorization: Bearer {{accessToken}}
+
+
+### Get Case Details
+GET {{host}}/v1/cases/{{caseCode}}
+Authorization: Bearer {{accessToken}}
+
+
+### Open Case
+POST {{host}}/v1/cases/{{caseCode}}/open
+Authorization: Bearer {{accessToken}}
+
+
+### Close Case
+POST {{host}}/v1/cases/{{caseCode}}/close
+Authorization: Bearer {{accessToken}}
+
+
+# ------------------------------
+# Contributions
+# ------------------------------
+
+### Contribute to Case
+# @name contribute
+POST {{host}}/v1/cases/{{caseCode}}/contributions
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "amount": 100
+}
+
+@contributionId = {{contribute.response.body.contributionId}}
+
+
+### Pay Contribution
+POST {{host}}/v1/contributions/{{contributionId}}/pay
+Authorization: Bearer {{accessToken}}
+
+
+### Confirm Contribution
+POST {{host}}/v1/contributions/{{contributionId}}/confirm
+Authorization: Bearer {{accessToken}}
+
+
+### Delete Draft Case
+DELETE {{host}}/v1/cases/{{draftCaseCode}}
+Authorization: Bearer {{accessToken}}
+
+
+# ------------------------------
+# Ledger
+# ------------------------------
+
+### Ledger Summary
+GET {{host}}/v1/ledger/summary
+Authorization: Bearer {{accessToken}}
+
+
+### Ledger Details (user)
+GET {{host}}/v1/ledger/{{userId}}
+Authorization: Bearer {{accessToken}}

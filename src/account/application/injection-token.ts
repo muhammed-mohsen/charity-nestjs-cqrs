@@ -1,0 +1,7 @@
+// src/account/application/injection-tokens.ts
+export enum InjectionToken {
+  ACCOUNT_REPOSITORY = 'ACCOUNT_REPOSITORY',
+  ACCOUNT_QUERY = 'ACCOUNT_QUERY',
+  FIREBASE_AUTH_PROVIDER = 'FIREBASE_AUTH_PROVIDER',
+  JWT_GENERATOR = 'JWT_GENERATOR',
+}

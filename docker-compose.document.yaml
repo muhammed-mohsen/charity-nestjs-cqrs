@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+
+  maildev:
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    ports:
+      - ${MAIL_CLIENT_PORT}:1080
+      - ${MAIL_PORT}:1025
+
+  mongo-primary:
+    image: mongo:8.0.15
+    hostname: mongo-primary
+    restart: always
+    # 🔴 No MONGO_INITDB_ROOT_USERNAME / PASSWORD here
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
+    volumes:
+      - mongo-primary-db:/data/db
+      - ./mongo-init-rs.js:/docker-entrypoint-initdb.d/mongo-init-rs.js:ro
+    ports:
+      - ${DATABASE_PORT}:27017
+
+  mongo-secondary:
+  
+    image: mongo:8.0.15
+    hostname: mongo-secondary
+    restart: always
+    # 🔴 No MONGO_INITDB_ROOT_USERNAME / PASSWORD here either
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
+    volumes:
+      - mongo-secondary-db:/data/db
+    ports:
+     - 27018:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - mongo-primary
+    ports:
+      - 8081:8081
+    environment:
+      # basic auth for the web UI itself (optional)
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      # 🔴 No MongoDB username/password in the URL, because Mongo is running without auth
+      ME_CONFIG_MONGODB_URL: mongodb://mongo-primary:27017,mongo-secondary:27017/?replicaSet=rs0
+
+  # keep your api/maildev as they are, just make sure they don't expect auth:
+  api:
+    build:
+      context: .
+      dockerfile: document.Dockerfile
+    depends_on:
+      - mongo-primary
+      - mongo-secondary
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      NODE_ENV: production
+      DATABASE_TYPE: mongodb
+      DATABASE_NAME: api
+      DATABASE_URL: mongodb://mongo-primary:27017,mongo-secondary:27017/?replicaSet=rs0&readPreference=primary
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+
+
+volumes:
+  mongo-primary-db:
+  mongo-secondary-db:
+# load('/docker-entrypoint-initdb.d/mongo-init-rs.js');

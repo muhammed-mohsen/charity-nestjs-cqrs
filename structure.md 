@@ -1,0 +1,70 @@
+src/
+  account/
+    account.module.ts
+
+    interface/              # how the outside world talks to this BC
+      rest/
+        account.controller.ts
+        auth.controller.ts
+      dto/
+        account/
+          open-account.dto.ts
+          update-account.dto.ts
+        invitation/
+          invite-account.dto.ts
+
+    application/            # use cases/orchestration (no business rules here)
+      command/
+        invite-account/
+          invite-account.command.ts
+          invite-account.handler.ts
+        open-account/
+          open-account.command.ts
+          open-account.handler.ts
+      query/
+        get-account/
+          get-account.query.ts
+          get-account.handler.ts
+      event-handler/        # handlers that react to domain events
+        account-opened.handler.ts
+        invitation-accepted.handler.ts
+
+    domain/                 # pure business logic
+      account/
+        account.aggregate.ts              # AggregateRoot
+        account.factory.ts                # creates/reconstitutes account
+        account.repository.ts             # interface
+        account.domain-service.ts         # if needed
+        event/
+          account-opened.event.ts
+          account-locked.event.ts
+      invitation/
+        invitation.aggregate.ts
+        invitation.repository.ts
+        event/
+          invitation-sent.event.ts
+      device/
+        device.entity.ts
+        device.repository.ts
+      common/
+        value-object/
+        error/
+        types.ts
+
+    infrastructure/         # technical implementation details
+      persistence/
+        entity/
+          account.entity.ts
+          invitation.entity.ts
+          device.entity.ts
+          base.entity.ts
+        repository/
+          account.repository.impl.ts      # implements domain AccountRepository
+          invitation.repository.impl.ts
+          device.repository.impl.ts
+      query/
+        account.query.impl.ts
+        invitation.query.impl.ts
+      adaptor/
+        email-adaptor.impl.ts
+        sms-adaptor.impl.ts
