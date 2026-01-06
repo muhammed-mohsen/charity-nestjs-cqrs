@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+<body>
+    <h3>Firebase ID Token Generator</h3>
+
+    <button id="signInAnon">Sign in Anonymously</button>
+    <button id="getToken">Get ID Token</button>
+
+    <pre id="out"></pre>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import {
+            getAuth,
+            signInAnonymously,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "sdsds",
+            authDomain: "sdsds",
+            projectId: "SDSFSDF",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const out = document.getElementById("out");
+
+        document.getElementById("signInAnon").onclick = async () => {
+            await signInAnonymously(auth);
+            out.textContent = "Signed in anonymously ✅";
+        };
+
+        document.getElementById("getToken").onclick = async () => {
+            const user = auth.currentUser;
+            if (!user) {
+                out.textContent = "Not signed in. Click Sign in Anonymously first.";
+                return;
+            }
+            const token = await user.getIdToken(true);
+            out.textContent = token;
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) out.textContent = `User: ${user.uid}\nClick "Get ID Token"`;
+        });
+    </script>
+</body>
+
+</html>
+
+
+<!-- // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB0zxRVXGbVKCj1NsAZETCmhHpaeqfv2gc",
+  authDomain: "charity-test-306c9.firebaseapp.com",
+  projectId: "charity-test-306c9",
+  storageBucket: "charity-test-306c9.firebasestorage.app",
+  messagingSenderId: "652132072100",
+  appId: "1:652132072100:web:778aa237ec40cf980b0431",
+  measurementId: "G-MD1T7RKYWZ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app); -->
