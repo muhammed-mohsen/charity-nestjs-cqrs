@@ -1,7 +1,6 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { DeviceProps } from '../../domain/model/device/device';
-import { BaseEntitySchemaClass } from './base.entity';
 
 export type DeviceSchemaDocument = HydratedDocument<DeviceSchemaClass>;
 // }
@@ -11,12 +10,10 @@ export type DeviceSchemaDocument = HydratedDocument<DeviceSchemaClass>;
     virtuals: true,
     getters: true,
   },
+  _id: false,
 })
-export class DeviceSchemaClass
-  extends BaseEntitySchemaClass
-  implements DeviceProps
-{
-  @Prop({ type: String, required: true })
+export class DeviceSchemaClass implements DeviceProps {
+  @Prop({ type: String, required: true, unique: true })
   deviceId!: string;
   @Prop({ type: String, required: true })
   deviceType!: string;
@@ -30,3 +27,5 @@ export class DeviceSchemaClass
   @Prop({ type: Date, required: true })
   lastAccessTime!: Date;
 }
+
+export const DeviceSchema = SchemaFactory.createForClass(DeviceSchemaClass);

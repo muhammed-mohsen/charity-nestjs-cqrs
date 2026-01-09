@@ -1,6 +1,6 @@
 // package com.charity_hub.accounts.internal.core.model.account;
 
-import { ValueValidator } from '../../../../utils/domain/extention/value.validator';
+import { ValueValidator } from '../../../../shared/domain/extention/value.validator';
 
 // import com.charity_hub.shared.domain.extension.ValueValidator;
 
@@ -20,14 +20,18 @@ import { ValueValidator } from '../../../../utils/domain/extention/value.validat
 export class FullName {
   private static readonly MIN_LENGTH = 2;
   private static readonly MAX_LENGTH = 50;
-  constructor(private readonly value: string) {
+  constructor(private readonly _value: string) {
     ValueValidator.assertWithinRange(
-      value,
+      FullName.name,
+      _value,
       FullName.MIN_LENGTH,
       FullName.MAX_LENGTH,
     );
   }
   static create(value: string): FullName {
     return new FullName(value);
+  }
+  get value(): string {
+    return this._value;
   }
 }

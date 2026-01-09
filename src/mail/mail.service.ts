@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { I18nContext } from 'nestjs-i18n';
 
-import { MaybeType } from '../utils/types/maybe.type';
 import path from 'path';
 import { AllConfigType } from '../config/config.type';
 import { MailerService } from '../mailer/internal/mailer.service';
+import { MaybeType } from '../shared/types/maybe.type';
 import { MailData } from './interface/mail-data.interface';
 
 @Injectable()

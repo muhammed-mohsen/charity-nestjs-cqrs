@@ -1,5 +1,5 @@
+import { NullableType } from '../../../shared/types/nullable.type';
 import { User } from '../../../users/domain/user';
-import { NullableType } from '../../../utils/types/nullable.type';
 import { Session } from '../../domain/session';
 
 export abstract class SessionRepository {

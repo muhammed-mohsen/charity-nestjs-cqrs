@@ -11,7 +11,25 @@ export class DomainAccountMapper {
   }
 
   toPersistence(domain: Account): AccountSchemaClass {
-    console.log('🚀 ~ DomainAccountMapper ~ toPersistence ~ domain:', domain);
-    return new AccountSchemaClass();
+    const persistenceSchema = new AccountSchemaClass();
+    if (domain.devices.length > 0) {
+      persistenceSchema.devices;
+      persistenceSchema.devices = domain.devices.map((device) => {
+        return {
+          deviceId: device.deviceId.value,
+          deviceType: device.deviceType.value,
+          refreshToken: device.refreshToken?.value ?? '',
+          fcmToken: device.fcmToken?.value ?? '',
+          lastAccessTime: device.lastAccessTime,
+        };
+      });
+    }
+    persistenceSchema._id = domain.id.value;
+    persistenceSchema.mobileNumber = domain.mobileNumber.value;
+    persistenceSchema.fullName = domain.fullName?.value ?? '';
+    persistenceSchema.photoUrl = domain.photoUrl?.value ?? '';
+    persistenceSchema.blocked = domain.blocked;
+    persistenceSchema.permissions = domain.permissions;
+    return persistenceSchema;
   }
 }

@@ -3,15 +3,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import path from 'path';
 import { AccountModule } from './account/account.module';
+import { FirebaseModule } from './account/interface/services/firebase/firebase.module';
 import authConfig from './auth/config/auth.config';
 import appConfig from './config/app.config';
 import { AllConfigType } from './config/config.type';
 import databaseConfig from './database/config/database.config';
 import fileConfig from './files/config/file.config';
-import { FirebaseModule } from './firebase/firebase.module';
 import mailConfig from './mailer/config/mail.config';
-import { DatabaseModule } from './utils/DatabaseModule';
-import { RequestStorageMiddleware } from './utils/RequestStorageMiddleware';
+import { DatabaseModule } from './shared/infrastructure/DatabaseModule';
+import { RequestStorageMiddleware } from './shared/middleware/RequestStorageMiddleware';
 
 // const infrastructureDatabaseModule = MongooseModule.forRootAsync({
 //   useClass: MongooseConfigService,

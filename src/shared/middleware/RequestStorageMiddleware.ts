@@ -1,7 +1,7 @@
 import { NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { RequestStorage } from './RequestStorage';
+import { RequestStorage } from '../infrastructure/RequestStorage';
 
 export class RequestStorageMiddleware implements NestMiddleware {
   use(

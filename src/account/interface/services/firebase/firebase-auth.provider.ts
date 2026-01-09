@@ -1,6 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type * as adminType from 'firebase-admin';
-import { FirebaseAuthProvider } from '../account/domain/contracts/firebase-auth.provider';
+import { FirebaseAuthProvider } from '../../../domain/contracts/firebase-auth.provider';
 import { FIREBASE_ADMIN } from './firebase-tokens';
 
 @Injectable()

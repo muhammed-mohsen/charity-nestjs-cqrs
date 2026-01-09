@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AllConfigType } from '../../../config/config.type';
+import { RequestStorage } from '../../../shared/infrastructure/RequestStorage';
 import { AccountRepository } from '../../domain/contracts/account.repository';
 import { Account } from '../../domain/model/account/account';
 import {
@@ -39,7 +40,11 @@ export class AccountRepositoryImpl implements AccountRepository {
   async save(entity: Account): Promise<void> {
     const raw = this.mapper.toPersistence(entity);
     await this.writeAccountModel
-      .updateOne({ id: raw.id }, { $set: raw }, { upsert: true })
+      .updateOne(
+        { _id: raw._id },
+        { $set: raw },
+        { upsert: true, session: RequestStorage.getStorage().session },
+      )
       .exec();
   }
 

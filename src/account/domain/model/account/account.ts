@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@nestjs/cqrs';
 import { Pair } from '../../../../shared/domain/models/pair';
-import { NullableType } from '../../../../utils/types/nullable.type';
+import { NullableType } from '../../../../shared/types/nullable.type';
 import { JwtGenerator } from '../../contracts/jwt-generator';
 import { AccountAuthenticatedEvent } from '../../event/account-authenticated';
 import { AccountCreated } from '../../event/account-created.event';
@@ -11,18 +11,14 @@ import { FullName } from './fullname';
 import { MobileNumber } from './mobile-number';
 import { PhotoUrl } from './photo-url';
 export type AccountEssentialProps = {
-  id: string;
+  _id: string;
   mobileNumber: string;
   fullName: string;
   photoUrl: string;
   blocked: boolean;
-  joinedDate: Date;
-  lastUpdated: Date;
   permissions: string[];
 };
 export type AccountOptionalProps = {
-  joinedDate?: Date;
-  lastUpdated?: Date;
   permissions?: string[];
   devices?: DeviceProps[];
 };
@@ -42,7 +38,6 @@ export class Account extends AggregateRoot {
     private readonly _blocked: boolean = false,
     private readonly _fullName: NullableType<FullName> = null,
     private readonly _photoUrl: NullableType<PhotoUrl> = null,
-    private readonly _joinedDate: Date = new Date(),
   ) {
     super();
   }
@@ -55,9 +50,10 @@ export class Account extends AggregateRoot {
     let device = this.getDevice(deviceId);
     if (!device) {
       device = Device.create(deviceId, deviceType);
+      this.addDevice(device);
     }
-    this.addDevice(device);
     const refreshToken = jwtGenerator.generateRefreshToken(this, device);
+    console.log(`Refresh token generated: ${refreshToken}`);
     device.updateRefreshToken(refreshToken);
     this.apply(new AccountAuthenticatedEvent(this._id, device));
     return new Pair<string, string>(
@@ -70,14 +66,12 @@ export class Account extends AggregateRoot {
     this._devices.push(device);
   }
   registerAccount(): Account {
-    console.log(this.id.value, this.mobileNumber.value);
-
-    this.apply(new AccountCreated(this.id.value, this.mobileNumber.value));
-    console.log('AccountCreated event applied');
+    this.apply(new AccountCreated(this._id.value, this._mobileNumber.value));
     return this;
   }
   getDevice(_deviceId: string) {
     const deviceId = DeviceId.create(_deviceId);
+
     return this._devices.find((device) => device.deviceId.equals(deviceId));
   }
   get id(): AccountId {
@@ -98,5 +92,8 @@ export class Account extends AggregateRoot {
   }
   get fullName(): NullableType<FullName> {
     return this._fullName;
+  }
+  get photoUrl(): NullableType<PhotoUrl> {
+    return this._photoUrl;
   }
 }

@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {
   ClassSerializerInterceptor,
   ValidationPipe,
@@ -8,10 +7,13 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
+import 'dotenv/config';
 import { AppModule } from './app.module';
-import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
-import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import { GlobalHttpExceptionFilter } from './shared/filters/http-exception.filter';
+import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
+import { ResolvePromisesInterceptor } from './shared/interceptors/serializer.interceptor';
+import validationOptions from './shared/utils/validation-options';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -34,7 +36,9 @@ async function bootstrap() {
     // https://github.com/typestack/class-transformer/issues/549
     new ResolvePromisesInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
+    new ResponseInterceptor(),
   );
+  app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   const options = new DocumentBuilder()
     .setTitle('API')

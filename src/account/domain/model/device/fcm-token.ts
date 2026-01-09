@@ -1,10 +1,10 @@
-import { ValueValidator } from '../../../../utils/domain/extention/value.validator';
+import { ValueValidator } from '../../../../shared/domain/extention/value.validator';
 
 export class FCMToken {
   1;
 
   private constructor(private readonly _value: string) {
-    ValueValidator.assertNotEmpty(_value);
+    ValueValidator.assertNotEmpty(FCMToken.name, _value);
   }
   static create(value: string): FCMToken {
     return new FCMToken(value);

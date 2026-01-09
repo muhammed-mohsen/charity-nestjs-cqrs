@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Pair } from '../../../../shared/domain/models/pair';
+import { Transactional } from '../../../../shared/infrastructure/transactional';
 import { AccountFactory } from '../../../domain/account.factory';
 import { AccountRepository } from '../../../domain/contracts/account.repository';
 import { FirebaseAuthProvider } from '../../../domain/contracts/firebase-auth.provider';
@@ -13,6 +13,7 @@ import { JwtGenerator } from '../../../domain/contracts/jwt-generator';
 import { Account } from '../../../domain/model/account/account';
 import { InjectionToken } from '../../injection-token';
 import { AuthenticateCommand } from './authenticate.command';
+import { AuthenticateResponse } from './authenticate.response';
 
 @CommandHandler(AuthenticateCommand)
 export class AuthenticateHandler
@@ -30,7 +31,8 @@ export class AuthenticateHandler
   ) {}
 
   private readonly logger = new Logger(AuthenticateHandler.name);
-  async execute(command: AuthenticateCommand): Promise<Pair<string, string>> {
+  @Transactional()
+  async execute(command: AuthenticateCommand): Promise<AuthenticateResponse> {
     // Verify JWT token
     try {
       const mobileNumber = await this.authProvider.getVerifiedMobileNumber(
@@ -41,17 +43,17 @@ export class AuthenticateHandler
         mobileNumber,
         command,
       );
-      this.logger.log(`Authenticating account: ${account.mobileNumber}`);
       const tokens = account.authenticate(
         command.deviceId,
         command.deviceType,
         this.jwtGenerator,
       );
       await this.accountRepository.save(account);
-      this.logger.log(
-        `Authentication successful for account: ${account.mobileNumber}`,
-      );
-      return tokens;
+
+      return {
+        accessToken: tokens.getFirst(),
+        refreshToken: tokens.getSecond(),
+      };
     } catch (error) {
       this.logger.error(`Error authenticating account: ${error}`);
       throw new UnprocessableEntityException({
@@ -69,7 +71,6 @@ export class AuthenticateHandler
   ): Promise<Account> {
     const account =
       await this.accountRepository.getByMobileNumber(mobileNumber);
-    this.logger.log(`Account found: ${account ? 'true' : 'false'}`);
     if (account) {
       return account;
     }
@@ -80,7 +81,6 @@ export class AuthenticateHandler
     command: AuthenticateCommand,
   ): Promise<Account> {
     const isAdmin = await this.accountRepository.isAdmin(mobileNumber);
-    this.logger.log(`Is admin: ${isAdmin}`);
     const account = this.accountFactory.create({
       mobileNumber: mobileNumber,
       devices: [
@@ -96,7 +96,7 @@ export class AuthenticateHandler
     account.registerAccount();
     // console.log(account.id.value, account.mobileNumber.value);
     await this.accountRepository.save(account); // persist first
-
+    // throw new Error('test');
     account.commit();
     return account;
   }

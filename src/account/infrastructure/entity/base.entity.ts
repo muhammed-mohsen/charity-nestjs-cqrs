@@ -1,6 +1,5 @@
 import { Prop, Schema } from '@nestjs/mongoose';
-import { HydratedDocument, now } from 'mongoose';
-import { EntityDocumentHelper } from '../../../utils/document-entity-helper';
+import { HydratedDocument } from 'mongoose';
 
 export type BaseEntitySchemaDocument = HydratedDocument<BaseEntitySchemaClass>;
 
@@ -11,13 +10,7 @@ export type BaseEntitySchemaDocument = HydratedDocument<BaseEntitySchemaClass>;
     getters: true,
   },
 })
-export class BaseEntitySchemaClass extends EntityDocumentHelper {
-  @Prop({ default: now })
-  createdAt: Date;
-
-  @Prop({ default: now })
-  updatedAt: Date;
-
+export class BaseEntitySchemaClass {
   @Prop()
   deletedAt: Date;
 }

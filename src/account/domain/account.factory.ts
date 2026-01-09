@@ -31,22 +31,20 @@ export class AccountFactory {
         false,
         null,
         null,
-        new Date(),
       ),
     );
   }
 
   reconstitute(props: AccountProps): Account {
-    const _id = new AccountId(props.id);
+    const _id = new AccountId(props._id);
     const _mobileNumber = MobileNumber.create(props.mobileNumber);
     const _devices = props.devices.map((device) =>
       Device.create(device.deviceId, device.deviceType),
     );
-    const _permissions = props.permissions;
-    const _blocked = props.blocked;
-    const _fullName = new FullName(props.fullName);
-    const _photoUrl = new PhotoUrl(props.photoUrl);
-    const _joinedDate = props.joinedDate;
+    const _permissions = props.permissions ?? [];
+    const _blocked = props.blocked ?? false;
+    const _fullName = props.fullName ? new FullName(props.fullName) : null;
+    const _photoUrl = props.photoUrl ? new PhotoUrl(props.photoUrl) : null;
     return this.eventPublisher.mergeObjectContext(
       new Account(
         _id,
@@ -56,7 +54,6 @@ export class AccountFactory {
         _blocked,
         _fullName,
         _photoUrl,
-        _joinedDate,
       ),
     );
   }

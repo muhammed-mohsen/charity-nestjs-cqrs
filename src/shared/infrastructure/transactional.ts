@@ -16,7 +16,7 @@ export function Transactional() {
     descriptor.value = new Proxy(originalMethod, {
       apply: async (proxyTarget, thisArg, args) => {
         const store = RequestStorage.getStorage();
-        let session: ClientSession | null = store.session;
+        let session: ClientSession | undefined = store.session;
         let isNewTransaction = false;
 
         // 1) If we already have a session, we are inside a nested @Transactional
@@ -40,7 +40,7 @@ export function Transactional() {
           if (isNewTransaction && store.transactionDepth <= 0) {
             await session!.commitTransaction();
             await session!.endSession();
-            RequestStorage.setSession(null);
+            RequestStorage.setSession(undefined);
           }
 
           // 4) Nested call - just decrease depth
@@ -54,7 +54,7 @@ export function Transactional() {
           if (isNewTransaction && store.transactionDepth <= 0) {
             await session!.abortTransaction();
             await session!.endSession();
-            RequestStorage.setSession(null);
+            RequestStorage.setSession(undefined);
           }
 
           // 6) Nested call - just decrease depth

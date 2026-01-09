@@ -1,8 +1,8 @@
-import { ValueValidator } from '../../../../utils/domain/extention/value.validator';
+import { ValueValidator } from '../../../../shared/domain/extention/value.validator';
 
 export class RefreshToken {
   private constructor(private readonly _value: string) {
-    ValueValidator.assertNotEmpty(_value);
+    ValueValidator.assertNotEmpty(RefreshToken.name, _value);
   }
 
   // Static factory method
@@ -10,7 +10,7 @@ export class RefreshToken {
     return new RefreshToken(value);
   }
 
-  public getValue(): string {
+  public get value(): string {
     return this._value;
   }
 

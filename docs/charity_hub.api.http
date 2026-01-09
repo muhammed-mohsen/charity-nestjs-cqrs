@@ -3,10 +3,11 @@
 @idToken = +201260032632
 @deviceId = 91235778sd412qwwtest
 @deviceType = android
-### Authenticate
-GET {{host}}/actuator
+# @refreshToken = {{authenticate.response.body.refreshToken}}
+# @accessToken = {{authenticate.response.body.accessToken}}
 
 ### authenticate
+# @name authenticate
 POST {{host}}/v1/accounts/authenticate
 Content-Type: application/json
 
@@ -16,12 +17,11 @@ Content-Type: application/json
   "deviceType": "{{deviceType}}"
 }
 
-# > {%
-#     client.assert(response.statusCode === 200)
-#     client.global.set("accessToken", response.body.accessToken)
-#     client.global.set("refreshToken", response.body.refreshToken)
+### set-auth-vars
+# (no request here, just assignments)
+@accessToken = {{authenticate.response.body.accessToken}}
+@refreshToken = {{authenticate.response.body.refreshToken}}
 
-# %}
 
 
 ### Refresh Token

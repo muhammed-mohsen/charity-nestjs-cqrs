@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
-import { InjectionToken } from '../account/application/injection-token';
+import { InjectionToken } from '../../../application/injection-token';
 import { FirebaseAuthProviderImpl } from './firebase-auth.provider';
 import { FirebaseAuthProviderStub } from './firebase-auth.provider.stub';
 import { FIREBASE_ADMIN, FIREBASE_PROVIDER } from './firebase-tokens';

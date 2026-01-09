@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Entity } from '../../../../shared/domain/models/entity';
-import { NullableType } from '../../../../utils/types/nullable.type';
+import { NullableType } from '../../../../shared/types/nullable.type';
 import { DeviceId } from './device-id';
 import { DeviceType } from './device-type';
 import { FCMToken } from './fcm-token';
@@ -58,8 +58,9 @@ export class Device extends Entity<DeviceId> {
       throw new UnauthorizedException('Refresh token is invalid');
     }
   }
-  updateRefreshToken(): void {
-    // const _refreshToken = RefreshToken.create(refreshToken);
+  updateRefreshToken(refreshToken: string): void {
+    const _refreshToken = RefreshToken.create(refreshToken);
+    this._refreshToken = _refreshToken;
     this._lastAccessTime = new Date();
   }
   updateFCMToken(fcmToken: string): void {

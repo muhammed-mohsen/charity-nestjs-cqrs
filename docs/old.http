@@ -25,8 +25,8 @@ Content-Type: application/json
   "deviceType": "{{deviceType}}"
 }
 
-#@accessToken = {{auth.response.body.accessToken}}
-#@refreshToken = {{auth.response.body.refreshToken}}
+# @accessToken = {{auth.response.body.accessToken}}
+# @refreshToken = {{auth.response.body.refreshToken}}
 
 
 ### Refresh Token (returns new accessToken)

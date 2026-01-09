@@ -19,7 +19,7 @@ export class JwtGeneratorImpl implements JwtGenerator {
     const payload = this.tokenMapper.toAccessToken(account, device);
     return this.jwtService.sign(payload, {
       expiresIn: '5m',
-      secret: this.config.get('JWT_SECRET'),
+      secret: this.config.get('AUTH_JWT_SECRET'),
     });
   }
 
@@ -27,7 +27,7 @@ export class JwtGeneratorImpl implements JwtGenerator {
     const payload = this.tokenMapper.toRefreshToken(account, device);
     return this.jwtService.sign(payload, {
       expiresIn: '1y',
-      secret: this.config.get('JWT_SECRET'),
+      secret: this.config.get('AUTH_JWT_SECRET'),
     });
   }
 }

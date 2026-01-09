@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 type Storage = {
   requestId: string;
   transactionDepth: number;
-  session: ClientSession | null;
+  session?: ClientSession;
 };
 
 class RequestStorageImplement {
@@ -16,7 +16,7 @@ class RequestStorageImplement {
     this.storage.enterWith({
       requestId: uuidv4(),
       transactionDepth: 0,
-      session: null,
+      session: undefined,
     });
   }
 
@@ -30,7 +30,7 @@ class RequestStorageImplement {
     return store;
   }
 
-  setSession(session: ClientSession | null): void {
+  setSession(session?: ClientSession): void {
     const store = this.getStorage();
     store.session = session;
   }

@@ -1,12 +1,17 @@
-import { ValueValidator } from '../../../../utils/domain/extention/value.validator';
+import { ValueValidator } from '../../../../shared/domain/extention/value.validator';
 
 export class MobileNumber {
   private static readonly FORMAT = /^[0-9]*$/;
   private static readonly MIN_LENGTH = 10;
   private static readonly MAX_LENGTH = 1000;
   constructor(private readonly _value: string) {
-    ValueValidator.assertValidFormat(_value, MobileNumber.FORMAT);
+    ValueValidator.assertValidFormat(
+      MobileNumber.name,
+      _value,
+      MobileNumber.FORMAT,
+    );
     ValueValidator.assertWithinRange(
+      MobileNumber.name,
       _value,
       MobileNumber.MIN_LENGTH,
       MobileNumber.MAX_LENGTH,

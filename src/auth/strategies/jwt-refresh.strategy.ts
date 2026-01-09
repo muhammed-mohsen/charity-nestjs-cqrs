@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AllConfigType } from '../../config/config.type';
-import { OrNeverType } from '../../utils/types/or-never.type';
+import { OrNeverType } from '../../shared/types/or-never.type';
 import { JwtRefreshPayloadType } from './types/jwt-refresh-payload.type';
 
 @Injectable()

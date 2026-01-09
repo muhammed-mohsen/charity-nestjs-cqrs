@@ -8,6 +8,7 @@ export type InvitationSchemaDocument = HydratedDocument<InvitationSchemaClass>;
     virtuals: true,
     getters: true,
   },
+  collection: 'invitations',
 })
 export class InvitationSchemaClass extends BaseEntitySchemaClass {
   @Prop({ type: String, required: true })

@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { FirebaseModule } from '../firebase/firebase.module';
 import { MailModule } from '../mail/mail.module';
-import { DatabaseModule } from '../utils/DatabaseModule';
+import { DatabaseModule } from '../shared/infrastructure/DatabaseModule';
 import { AuthenticateHandler } from './application/command/authenticate/authenticate.handler';
 import { InvitationAccountHandler } from './application/command/invite-account/invite-account.handler';
 import { InjectionToken } from './application/injection-token';
@@ -24,6 +23,7 @@ import { AccountRepositoryImpl } from './infrastructure/repository/account.repos
 import { InvitationRepositoryImpl } from './infrastructure/repository/invitation.repository';
 import { AccountController } from './interface/controller/account.controller';
 import { AuthController } from './interface/controller/auth.controller';
+import { FirebaseModule } from './interface/services/firebase/firebase.module';
 import { JwtGeneratorImpl } from './interface/services/jwt/jwt-generator.impl';
 
 const domain = [AccountFactory];
@@ -32,8 +32,26 @@ const infrastructure = [
   DomainAccountMapper,
   InvitationRepositoryImpl,
   DomainInvitationMapper,
+  {
+    provide: InjectionToken.ACCOUNT_REPOSITORY,
+    useClass: AccountRepositoryImpl,
+  },
+  {
+    provide: InjectionToken.ACCOUNT_QUERY,
+    useClass: AccountRepositoryImpl,
+  },
+  {
+    provide: InvitationRepository,
+    useClass: InvitationRepositoryImpl,
+  },
 ];
 const application = [InvitationAccountHandler, AuthenticateHandler];
+const interfaces = [
+  {
+    provide: InjectionToken.JWT_GENERATOR,
+    useClass: JwtGeneratorImpl,
+  },
+];
 
 @Module({
   imports: [
@@ -48,28 +66,7 @@ const application = [InvitationAccountHandler, AuthenticateHandler];
     FirebaseModule,
   ],
   controllers: [AccountController, AuthController],
-  providers: [
-    ...domain,
-    ...infrastructure,
-    ...application,
-    {
-      provide: InjectionToken.ACCOUNT_REPOSITORY,
-      useClass: AccountRepositoryImpl,
-    },
-    {
-      provide: InjectionToken.ACCOUNT_QUERY,
-      useClass: AccountRepositoryImpl,
-    },
-    {
-      provide: InvitationRepository,
-      useClass: InvitationRepositoryImpl,
-    },
-
-    {
-      provide: InjectionToken.JWT_GENERATOR,
-      useClass: JwtGeneratorImpl,
-    },
-  ],
+  providers: [...domain, ...infrastructure, ...application, ...interfaces],
   exports: [
     InjectionToken.ACCOUNT_REPOSITORY,
     InjectionToken.ACCOUNT_QUERY,

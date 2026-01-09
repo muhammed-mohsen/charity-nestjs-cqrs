@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { NullableType } from '../../../utils/types/nullable.type';
+import { NullableType } from '../../../shared/types/nullable.type';
 import { InvitationRepository } from '../../domain/contracts/invitation.repository';
 import { Invitation } from '../../domain/model/invitation/invitation';
 import {
