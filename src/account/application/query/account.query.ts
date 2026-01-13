@@ -1,10 +1,8 @@
-import { AccountProps } from '../../domain/model/account/account';
+import { Account } from '../../domain/model/account/account';
+import { GetConnectionsResult } from './connections/get-connections.result';
 
 export interface AccountQuery {
-  findById(id: string): Promise<AccountProps | null>;
-  findByEmail(email: string): Promise<AccountProps | null>;
-  isAdmin(email: string): Promise<boolean>;
-  revoke(id: string): Promise<void>;
-  isRevoked(id: string, tokenIssueDate: number): Promise<boolean>;
-  findAll(): Promise<AccountProps[]>;
+  findById(id: string): Promise<Account | null>;
+  getConnections(userId: string): Promise<GetConnectionsResult>;
+  findByIds(ids: string[]): Promise<Account[]>;
 }

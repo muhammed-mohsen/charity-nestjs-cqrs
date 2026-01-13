@@ -5,6 +5,7 @@ export class MobileNumber {
   private static readonly MIN_LENGTH = 10;
   private static readonly MAX_LENGTH = 1000;
   constructor(private readonly _value: string) {
+    ValueValidator.assertNotEmpty(MobileNumber.name, _value);
     ValueValidator.assertValidFormat(
       MobileNumber.name,
       _value,

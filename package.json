@@ -66,6 +66,7 @@
     "swagger-ui-express": "5.0.1"
   },
   "devDependencies": {
+    "@ben-mohsen/nest-ddd-schematics": "github:muhammed-mohsen/nest-ddd-schematics",
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
     "@eslint/eslintrc": "^3.2.0",

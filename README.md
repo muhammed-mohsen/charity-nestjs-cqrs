@@ -46,3 +46,6 @@ Belongs to the [bc boilerplates](https://bcboilerplates.com/) ecosystem
 - [x] E2E and units tests.
 - [x] Docker.
 - [x] CI (Github Actions).
+
+   pnpm install git+https://github.com/muhammed-mohsen/nest-ddd-schematics.git --save-dev   
+   nest g ddd-module users --collection @ben-mohsen/nest-ddd-schematics\n

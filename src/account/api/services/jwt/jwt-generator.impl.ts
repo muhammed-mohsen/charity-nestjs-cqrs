@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AllConfigType } from '../../../../config/config.type';
 import { JwtGenerator } from '../../../domain/contracts/jwt-generator';
 import { Account } from '../../../domain/model/account/account';
 import { Device } from '../../../domain/model/device/device';
@@ -11,23 +12,23 @@ export class JwtGeneratorImpl implements JwtGenerator {
   constructor(
     private readonly jwtService: JwtService,
 
-    private readonly config: ConfigService,
+    private readonly config: ConfigService<AllConfigType>,
   ) {}
   private readonly tokenMapper = new TokenMapper();
 
   generateAccessToken(account: Account, device: Device): string {
     const payload = this.tokenMapper.toAccessToken(account, device);
     return this.jwtService.sign(payload, {
-      expiresIn: '5m',
-      secret: this.config.get('AUTH_JWT_SECRET'),
+      expiresIn: this.config.getOrThrow('auth.expires', { infer: true }),
+      secret: this.config.getOrThrow('auth.secret', { infer: true }),
     });
   }
 
   generateRefreshToken(account: Account, device: Device): string {
     const payload = this.tokenMapper.toRefreshToken(account, device);
     return this.jwtService.sign(payload, {
-      expiresIn: '1y',
-      secret: this.config.get('AUTH_JWT_SECRET'),
+      expiresIn: this.config.getOrThrow('auth.refreshExpires', { infer: true }),
+      secret: this.config.getOrThrow('auth.refreshSecret', { infer: true }),
     });
   }
 }

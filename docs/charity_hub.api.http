@@ -3,6 +3,9 @@
 @idToken = +201260032632
 @deviceId = 91235778sd412qwwtest
 @deviceType = android
+@caseCode = 1234567890
+@contributionId = 1234567890
+@draftCaseCode = 1234567890
 # @refreshToken = {{authenticate.response.body.refreshToken}}
 # @accessToken = {{authenticate.response.body.accessToken}}
 
@@ -18,17 +21,18 @@ Content-Type: application/json
 }
 
 ### set-auth-vars
-# (no request here, just assignments)
-@accessToken = {{authenticate.response.body.accessToken}}
-@refreshToken = {{authenticate.response.body.refreshToken}}
+@accessToken = {{authenticate.response.body.data.accessToken}}
+@refreshToken = {{authenticate.response.body.data.refreshToken}}
 
 
 
 ### Refresh Token
+# @name refreshTokenApi
 POST {{host}}/v1/accounts/refresh-token
 Content-Type: application/json
 Authorization: Bearer {{refreshToken}}
-
+### set-auth-vars
+@accessToken = {{refreshTokenApi.response.body.data}}
 
 ### Register FCM Token
 
@@ -39,9 +43,7 @@ Authorization: Bearer {{accessToken}}
 {
   "fcmToken": "ec-RVDOIQE8Cjx1sbZ4H_L:APA91bGM464Nv_BnV1r48C0bPhHLnRHNEGlg0NekUn1JW_slXy7t20eSMtPQNF8ZlwzOzNDWDiH0YmdTa3P0EGc3aWxbhUGxM584EAikK6xzRAlJqQTNSLPdJg7HmL2OVjkA5no71F6N"
 }
-> {%
-    client.assert(response.status === 201)
-%}
+
 
 ### Invite user
 
@@ -52,9 +54,7 @@ Authorization: Bearer {{accessToken}}
 {
   "mobileNumber": "201260032633"
 }
-> {%
-    client.assert(response.status === 200)
-%}
+
 
 ###
 

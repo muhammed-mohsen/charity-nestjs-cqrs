@@ -6,6 +6,10 @@ export class DomainInvitationMapper {
     return Invitation.create(doc.mobileNumber, doc.inviterId);
   }
   toPersistence(model: Invitation): Partial<InvitationSchemaClass> {
+    console.log(
+      '🚀 ~ DomainInvitationMapper ~ toPersistence ~ Invitation:',
+      model.invitedMobileNumber,
+    );
     return {
       mobileNumber: model.invitedMobileNumber.value,
       inviterId: model.inviterId,

@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 
 export class ValueValidator {
   static assertNotEmpty(className: string, value: string): void {
-    if (value.length === 0) {
+    if (!value || value.length === 0) {
       throw new BadRequestException(`${className}: Value must not be empty`);
     }
   }

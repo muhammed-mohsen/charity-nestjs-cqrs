@@ -17,9 +17,9 @@ export class InvitationRepositoryImpl implements InvitationRepository {
     private readonly writeInvitationModel: Model<InvitationSchemaDocument>,
     private readonly mapper: DomainInvitationMapper,
   ) {}
-  async findByEmail(email: string): Promise<NullableType<Invitation>> {
+  async findByMobileNumber(mobileNumber: string): Promise<NullableType<Invitation>> {
     const doc = await this.writeInvitationModel
-      .findOne({ email: email })
+      .findOne({ mobileNumber: mobileNumber })
       .exec();
     return doc ? this.mapper.toDomain(doc) : null;
   }
@@ -34,12 +34,12 @@ export class InvitationRepositoryImpl implements InvitationRepository {
       .exec();
   }
   async hasInvitation(
-    invitedEmail: string,
+    invitedMobileNumber: string,
     inviterId: string,
   ): Promise<boolean> {
     return (
       (await this.writeInvitationModel
-        .exists({ email: invitedEmail, inviterId })
+        .exists({ mobileNumber: invitedMobileNumber, inviterId })
         .exec()) !== null
     );
   }

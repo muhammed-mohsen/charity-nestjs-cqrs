@@ -39,7 +39,12 @@ export class AccountFactory {
     const _id = new AccountId(props._id);
     const _mobileNumber = MobileNumber.create(props.mobileNumber);
     const _devices = props.devices.map((device) =>
-      Device.create(device.deviceId, device.deviceType),
+      Device.create(
+        device.deviceId,
+        device.deviceType,
+        device.refreshToken,
+        device.fcmToken,
+      ),
     );
     const _permissions = props.permissions ?? [];
     const _blocked = props.blocked ?? false;

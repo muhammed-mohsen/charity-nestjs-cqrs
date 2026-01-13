@@ -9,6 +9,7 @@ export class RequestStorageMiddleware implements NestMiddleware {
     response: Response,
     next: (error?: object) => void,
   ): void {
+    console.log('RequestStorageMiddleware', request.headers);
     RequestStorage.reset();
     next();
   }

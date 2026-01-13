@@ -15,6 +15,7 @@ export class InvitationAccountHandler
   implements ICommandHandler<InvitationAccountCommand>
 {
   constructor(
+    @Inject(InjectionToken.INVITATION_REPOSITORY)
     private readonly invitationRepository: InvitationRepository,
     @Inject(InjectionToken.ACCOUNT_REPOSITORY)
     private readonly accountRepository: AccountRepository,
@@ -38,16 +39,6 @@ export class InvitationAccountHandler
       });
     }
 
-    const account =
-      await this.accountRepository.getByMobileNumber(invitedMobileNumber);
-    if (!account) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          invitedMobileNumber: 'account not found',
-        },
-      });
-    }
     const invitation = Invitation.create(invitedMobileNumber, inviterId);
     await this.invitationRepository.save(invitation);
   }

@@ -1,6 +1,8 @@
+import { UnauthorizedException } from '@nestjs/common';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { Pair } from '../../../../shared/domain/models/pair';
 import { NullableType } from '../../../../shared/types/nullable.type';
+import { FCMTokenRegisteredEvent } from '../../../application/event/fcm-token-registered.event';
 import { JwtGenerator } from '../../contracts/jwt-generator';
 import { AccountAuthenticatedEvent } from '../../event/account-authenticated';
 import { AccountCreated } from '../../event/account-created.event';
@@ -24,6 +26,8 @@ export type AccountOptionalProps = {
 };
 export type AccountProps = AccountEssentialProps &
   Required<AccountOptionalProps>;
+
+//TODO: we need to review the flow of all events
 
 /**
  * Aggregate root for the Account context.
@@ -55,6 +59,7 @@ export class Account extends AggregateRoot {
     const refreshToken = jwtGenerator.generateRefreshToken(this, device);
     console.log(`Refresh token generated: ${refreshToken}`);
     device.updateRefreshToken(refreshToken);
+    console.log(`Device: ${device}`);
     this.apply(new AccountAuthenticatedEvent(this._id, device));
     return new Pair<string, string>(
       jwtGenerator.generateAccessToken(this, device),
@@ -65,6 +70,20 @@ export class Account extends AggregateRoot {
   addDevice(device: Device): void {
     this._devices.push(device);
   }
+  refreshAccessToken(
+    deviceId: string,
+    encodedRefreshToken: string,
+    jwtGenerator: JwtGenerator,
+  ): string {
+    const usedDevice = this.getDeviceOrThrow(deviceId);
+    usedDevice.validateRefreshToken(encodedRefreshToken);
+    return jwtGenerator.generateAccessToken(this, usedDevice);
+  }
+  registerFCMToken(deviceId: string, fcmToken: string): void {
+    const usedDevice = this.getDeviceOrThrow(deviceId);
+    usedDevice.updateFCMToken(fcmToken);
+    this.apply(new FCMTokenRegisteredEvent(this._id.value, deviceId, fcmToken));
+  }
   registerAccount(): Account {
     this.apply(new AccountCreated(this._id.value, this._mobileNumber.value));
     return this;
@@ -73,6 +92,13 @@ export class Account extends AggregateRoot {
     const deviceId = DeviceId.create(_deviceId);
 
     return this._devices.find((device) => device.deviceId.equals(deviceId));
+  }
+  getDeviceOrThrow(deviceId: string): Device {
+    const device = this.getDevice(deviceId);
+    if (!device) {
+      throw new UnauthorizedException('Device not found');
+    }
+    return device;
   }
   get id(): AccountId {
     return this._id;
@@ -90,10 +116,10 @@ export class Account extends AggregateRoot {
   get blocked(): boolean {
     return this._blocked;
   }
-  get fullName(): NullableType<FullName> {
-    return this._fullName;
+  get fullName(): FullName {
+    return this._fullName || FullName.create('');
   }
-  get photoUrl(): NullableType<PhotoUrl> {
-    return this._photoUrl;
+  get photoUrl(): PhotoUrl {
+    return this._photoUrl || PhotoUrl.create('');
   }
 }

@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import path from 'path';
 import { AccountModule } from './account/account.module';
-import { FirebaseModule } from './account/interface/services/firebase/firebase.module';
+import { FirebaseModule } from './account/api/services/firebase/firebase.module';
 import authConfig from './auth/config/auth.config';
 import appConfig from './config/app.config';
 import { AllConfigType } from './config/config.type';

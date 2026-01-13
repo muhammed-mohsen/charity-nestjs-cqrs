@@ -54,7 +54,7 @@ export class Device extends Entity<DeviceId> {
   }
   public validateRefreshToken(refreshToken: string): void {
     const _refreshToken = RefreshToken.create(refreshToken);
-    if (this.refreshToken?.equals(_refreshToken)) {
+    if (!this.refreshToken?.equals(_refreshToken)) {
       throw new UnauthorizedException('Refresh token is invalid');
     }
   }
@@ -76,11 +76,11 @@ export class Device extends Entity<DeviceId> {
   get deviceType(): DeviceType {
     return this._deviceType;
   }
-  get refreshToken(): NullableType<RefreshToken> {
-    return this._refreshToken;
+  get refreshToken(): RefreshToken {
+    return this._refreshToken || RefreshToken.create('');
   }
-  get fcmToken(): NullableType<FCMToken> {
-    return this._fcmToken;
+  get fcmToken(): FCMToken {
+    return this._fcmToken || FCMToken.create('');
   }
   get lastAccessTime(): Date {
     return this._lastAccessTime;
